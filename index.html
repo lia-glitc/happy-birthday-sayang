@@ -383,11 +383,7 @@ Nggak 😤
 
 <p id="question"></p>
 
-<input id="answer">
-
-<button onclick="checkAnswer()">
-Jawab
-</button>
+<div id="choices"></div>
 
 <p id="result"></p>
 
@@ -626,64 +622,73 @@ totalSeconds;
 
 /* teka-teki */
 
-const questions=[
+const questions = [
 
 {
-q:"Aku punya kota tapi tidak punya rumah, punya sungai tapi tidak punya air. Aku apa?",
-a:"peta"
+q:"Apa skill paling hebat yang sayang punya?",
+choices:["Marah", "Sabar", "Ngilang", "Tidur kayak kebo"],
+a:"Tidur kayak kebo"
 },
 
 {
-q:"Semakin banyak diambil, semakin besar aku. Aku apa?",
-a:"lubang"
+q:"Siapa yang paling sering minta maaf duluan padahal nggak salah?",
+choices:["Aku","Kamu","Sinyal jelek","HP panas"],
+a:"Aku"
 },
 
 {
-q:"Aku punya 13 hati tetapi tidak punya organ. Aku apa?",
-a:"kartu remi"
+q:"Walaupun aku nyebelin terus, kamu tetap pilih siapa?",
+choices:["Mobile Legend", "Aku", "Davina", "Teman"],
+a:"Aku"
 }
 
 ];
 
-let current=0;
+let current = 0;
 
-function checkAnswer(){
+showQuestion();
 
-let input=
-answer.value.toLowerCase();
+function showQuestion(){
 
-if(input.includes(
-questions[current].a
-)){
+question.innerHTML = questions[current].q;
 
-current++;
+choices.innerHTML = "";
 
-progress.innerHTML=
-current;
+questions[current].choices.forEach(choice => {
 
-answer.value="";
+const btn = document.createElement("button");
 
-result.innerHTML=
-"✨ Benar";
+btn.innerHTML = choice;
 
-if(current<
-questions.length){
+btn.onclick = () => checkAnswer(choice);
 
-question.innerHTML=
-questions[current].q;
+choices.appendChild(btn);
+
+});
 
 }
 
-else{
+function checkAnswer(choice){
+
+if(choice === questions[current].a){
+
+result.innerHTML = "✨ Benar sayanggg";
+
+current++;
+
+progress.innerHTML = current;
+
+if(current < questions.length){
+
+showQuestion();
+
+}else{
 
 document
 .querySelector(".game")
-.style.display=
-"none";
+.style.display = "none";
 
-ending.classList.remove(
-"hidden"
-);
+ending.classList.remove("hidden");
 
 confetti({
 particleCount:300
@@ -691,32 +696,28 @@ particleCount:300
 
 }
 
-}
-
-else{
+}else{
 
 const funny=[
 
-"😂 Jawabanmu bikin albert einstein bingung",
+"🙈 Yah salah",
 
-"🐻 Katanya ram 2 tb",
+"😂 Kamu yakin?",
 
-"🙈 Salah wleee"
+"🐻 Coba pikir lagi",
 
-];
 
-result.innerHTML=
-
-funny[
-Math.floor(
-Math.random()*3
-)
+"📶 Sinyal lemot aja masih lebih cepat dari jawaban kamu",
 
 ];
+
+result.innerHTML =
+funny[Math.floor(Math.random()*3)];
 
 }
 
 }
+
 
 /* confetti background terus menerus */
 
