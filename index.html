@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You ❤️</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#ffd6e7,#fff0f6,#fff);
+min-height:100vh;
+overflow-x:hidden;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+
+.hidden{
+display:none;
+}
+
+.container{
+width:100%;
+max-width:900px;
+text-align:center;
+}
+
+/* loading */
+
+#loadingScreen{
+position:fixed;
+width:100%;
+height:100%;
+background:linear-gradient(135deg,#ffd6e7,#fff0f6);
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:9999;
+}
+
+.loadingBear{
+font-size:90px;
+animation:bounce 1s infinite alternate;
+}
+
+.loadingBar{
+width:300px;
+height:20px;
+background:white;
+border-radius:30px;
+overflow:hidden;
+margin-top:20px;
+}
+
+#loadingFill{
+width:0;
+height:100%;
+background:#ff5f95;
+}
+
+@keyframes bounce{
+to{
+transform:translateY(-10px);
+}
+}
+
+/* password */
+
+.passwordBox{
+background:rgba(255,255,255,.7);
+padding:35px;
+border-radius:30px;
+backdrop-filter:blur(15px);
+}
+
+input{
+padding:12px;
+border:none;
+border-radius:20px;
+width:250px;
+margin-top:15px;
+}
+
+button{
+padding:12px 25px;
+border:none;
+border-radius:30px;
+background:#ff5f95;
+color:white;
+cursor:pointer;
+margin-top:15px;
+transition:.5s;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+/* amplop */
+
+.envelope{
+width:300px;
+height:200px;
+margin:auto;
+background:#ff89b8;
+border-radius:20px;
+position:relative;
+cursor:pointer;
+margin-top:30px;
+transition:.5s;
+}
+
+.envelope:hover{
+transform:scale(1.05);
+}
+
+.envelope:before{
+content:"";
+position:absolute;
+border-left:150px solid transparent;
+border-right:150px solid transparent;
+border-top:100px solid #ff6ca4;
+}
+
+.seal{
+position:absolute;
+font-size:35px;
+left:130px;
+top:70px;
+}
+
+/* surat */
+
+.letter{
+margin-top:30px;
+padding:30px;
+background:rgba(255,255,255,.6);
+backdrop-filter:blur(15px);
+border-radius:30px;
+text-align:left;
+line-height:2;
+}
+
+#typingText{
+white-space:pre-line;
+min-height:350px;
+}
+
+.cursor{
+animation:blink .8s infinite;
+}
+
+@keyframes blink{
+50%{
+opacity:0;
+}
+}
+
+/* lama jadian */
+
+.loveTime{
+margin-top:30px;
+padding:25px;
+background:rgba(255,255,255,.6);
+border-radius:30px;
+}
+
+.timeBox{
+display:flex;
+justify-content:center;
+gap:15px;
+flex-wrap:wrap;
+margin-top:15px;
+}
+
+.timeCard{
+background:white;
+padding:15px;
+border-radius:20px;
+width:150px;
+}
+
+.timeCard span{
+font-size:22px;
+font-weight:bold;
+color:#ff5f95;
+}
+
+/* game */
+
+.game{
+margin-top:30px;
+background:white;
+padding:25px;
+border-radius:25px;
+}
+
+#ending{
+margin-top:30px;
+padding:30px;
+background:#ffdce9;
+border-radius:30px;
+}
+
+.heart{
+position:fixed;
+top:-10vh;
+font-size:22px;
+animation:fall linear forwards;
+pointer-events:none;
+z-index:0;
+}
+
+@keyframes fall{
+to{
+transform:translateY(110vh);
+opacity:0;
+}
+}
+
+#yesBtn, #noBtn {
+transition: all 0.3s ease;
+transform-origin: center;
+}
+
+#noBtn{
+position: relative;
+transition: all 0.2s ease;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- AUDIO -->
+<audio id="music" loop>
+  <source src="ultah.mp3" type="audio/mpeg">
+</audio>
+
+<div id="loadingScreen">
+
+<div class="loadingBear">
+🐻💗
+</div>
+
+<h2>Mempersiapkan sesuatu...</h2>
+
+<div class="loadingBar">
+<div id="loadingFill"></div>
+</div>
+
+<p id="loadingText">
+Mengumpulkan cinta ❤️
+</p>
+
+</div>
+
+<div id="passwordPage" class="hidden">
+
+<div class="passwordBox">
+
+<h1>🔒 Sebelum masuk...</h1>
+
+<p>Masukkan kata sandi</p>
+
+<input
+id="passwordInput"
+placeholder="Masukkan sesuatu...">
+
+<br>
+
+<button onclick="checkPassword()">
+Masuk 💌
+</button>
+
+<p id="passwordResult"></p>
+
+</div>
+
+</div>
+
+<div id="choicePage" class="hidden">
+<div class="passwordBox">
+
+<h1>😳 Mau buka kejutan?</h1>
+
+<button id="yesBtn" onclick="openSurprise()">
+Mau ❤️
+</button>
+
+<button id="noBtn" onclick="dontOpen()">
+Nggak 😤
+</button>
+
+<p id="angryText"></p>
+
+</div>
+</div>
+
+<div id="website" class="hidden">
+
+<div id="welcome">
+
+<h1>✨ Ada sesuatu nih buat kamu ✨</h1>
+
+<p>Klik amplopnya 💌</p>
+
+<div class="envelope" id="envelope">
+
+<div class="seal">
+❤️
+</div>
+
+</div>
+
+</div>
+
+<div id="main" class="hidden">
+
+<h1>Happy Birthday ❤️</h1>
+
+<div style="font-size:70px">
+🐻✨
+</div>
+
+<div class="letter">
+
+<h2>Untuk Kesayanganku 💌</h2>
+
+<div id="typingText"></div>
+
+</div>
+
+<div class="loveTime">
+
+<h2>⏳ Kita sudah bersama selama</h2>
+
+<div class="timeBox">
+
+<div class="timeCard">
+<span id="days"></span>
+<p>Hari ❤️</p>
+</div>
+
+<div class="timeCard">
+<span id="hours"></span>
+<p>Jam ⏰</p>
+</div>
+
+<div class="timeCard">
+<span id="minutes"></span>
+<p>Menit 🕒</p>
+</div>
+
+<div class="timeCard">
+<span id="seconds"></span>
+<p>Detik ⌛</p>
+</div>
+
+</div>
+
+</div>
+
+<div class="game">
+
+<h2>Dijawab ya sayangkuu ✨❤️</h2>
+
+<p id="question"></p>
+
+<input id="answer">
+
+<button onclick="checkAnswer()">
+Jawab
+</button>
+
+<p id="result"></p>
+
+<p>
+Progress:
+<span id="progress">0</span>/3
+</p>
+
+</div>
+
+<div id="ending" class="hidden">
+
+<h2>🎁 Pesan Terakhir</h2>
+
+<p>
+
+Selamat ulang tahun sayang ❤️
+
+Makasih udah hadir.
+
+Makasih buat semua cerita, tawa, dan semua hal yang udah dilewati.
+
+Aku harap nanti masih ada banyak cerita yang kita buat sama-sama.
+
+Aku sayang kamu 🥺💗
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* AUDIO */
+const music = document.getElementById("music");
+
+/* loading */
+
+let fill=0;
+
+let load=setInterval(()=>{
+
+fill+=25;
+
+loadingFill.style.width=
+fill+"%";
+
+if(fill>=100){
+
+clearInterval(load);
+
+setTimeout(()=>{
+
+loadingScreen.style.display=
+"none";
+
+passwordPage.classList.remove(
+"hidden"
+);
+
+},1000)
+
+}
+
+},1000)
+
+/* password */
+
+let attempts=0;
+
+function checkPassword(){
+
+let pass=
+passwordInput.value;
+
+attempts++;
+
+if(pass=="310725"){
+
+passwordPage.classList.add(
+"hidden"
+);
+
+choicePage.classList.remove(
+"hidden"
+);
+
+confetti();
+
+}
+
+else{
+
+let txt="🐻 Salah nih...";
+
+if(attempts>=2){
+
+txt+="<br>💡 Hint: tanggal jadian";
+
+}
+
+passwordResult.innerHTML=
+txt;
+
+}
+
+}
+
+/* amplop */
+
+envelope.onclick=()=>{
+
+welcome.classList.add("hidden");
+main.classList.remove("hidden");
+
+typeText();
+showTime();
+question.innerHTML=questions[0].q;
+
+/* PLAY MUSIC */
+music.volume = 0.5;
+
+music.play().catch(() => {
+document.addEventListener("click", () => {
+music.play();
+}, { once:true });
+});
+
+};
+
+/* surat ketik */
+
+const text=`
+
+Hai kamu ❤️
+
+Happy Birthday, sayangku ✨
+
+Aku nggak tau harus mulai dari mana, but I just want to say... kamu itu salah satu hal terbaik yang pernah datang ke hidup aku.
+
+Setiap hari bareng kamu itu terasa spesial, even hal kecil sekalipun. Cara kamu ketawa, cara kamu cerita, cara kamu marah kecil-kecilan... semuanya bikin aku nyaman banget.
+
+Aku bersyukur banget bisa kenal kamu. Not just as someone special, but as someone who actually understands me in a way nobody else does.
+
+Kadang aku mikir, how lucky I am to have you in my life.
+
+Kalau nanti kamu capek, aku mau kamu inget satu hal: kamu nggak sendirian. Aku selalu ada, even dari jauh atau dari hal kecil yang aku bisa lakuin buat kamu.
+
+Aku harap kamu selalu bahagia, selalu sehat, dan semua impian kamu pelan-pelan tercapai. You deserve everything good in this world.
+
+Dan kalau suatu hari kamu ragu sama semuanya, please remember this...
+
+I choose you. Always.
+
+❤️
+
+`;
+
+function typeText(){
+
+let i=0;
+
+let x=setInterval(()=>{
+
+typingText.innerHTML=
+text.substring(0,i)
++"<span class='cursor'>|</span>";
+
+i++;
+
+if(i>text.length){
+
+clearInterval(x);
+
+}
+
+},25);
+
+}
+
+/* lama jadian */
+
+function showTime(){
+
+const startDate=
+new Date(
+"2025-07-31T00:00:00"
+);
+
+setInterval(()=>{
+
+const now=
+new Date();
+
+const diff=
+now-startDate;
+
+const totalSeconds=
+Math.floor(
+diff/1000
+);
+
+const totalMinutes=
+Math.floor(
+totalSeconds/60
+);
+
+const totalHours=
+Math.floor(
+totalMinutes/60
+);
+
+const totalDays=
+Math.floor(
+totalHours/24
+);
+
+days.innerHTML=
+totalDays;
+
+hours.innerHTML=
+totalHours;
+
+minutes.innerHTML=
+totalMinutes;
+
+seconds.innerHTML=
+totalSeconds;
+
+},1000);
+
+}
+
+/* teka-teki */
+
+const questions=[
+
+{
+q:"Aku punya kota tapi tidak punya rumah, punya sungai tapi tidak punya air. Aku apa?",
+a:"peta"
+},
+
+{
+q:"Semakin banyak diambil, semakin besar aku. Aku apa?",
+a:"lubang"
+},
+
+{
+q:"Aku punya 13 hati tetapi tidak punya organ. Aku apa?",
+a:"kartu remi"
+}
+
+];
+
+let current=0;
+
+function checkAnswer(){
+
+let input=
+answer.value.toLowerCase();
+
+if(input.includes(
+questions[current].a
+)){
+
+current++;
+
+progress.innerHTML=
+current;
+
+answer.value="";
+
+result.innerHTML=
+"✨ Benar";
+
+if(current<
+questions.length){
+
+question.innerHTML=
+questions[current].q;
+
+}
+
+else{
+
+document
+.querySelector(".game")
+.style.display=
+"none";
+
+ending.classList.remove(
+"hidden"
+);
+
+confetti({
+particleCount:300
+});
+
+}
+
+}
+
+else{
+
+const funny=[
+
+"😂 Jawabanmu bikin albert einstein bingung",
+
+"🐻 Katanya ram 2 tb",
+
+"🙈 Salah wleee"
+
+];
+
+result.innerHTML=
+
+funny[
+Math.floor(
+Math.random()*3
+)
+
+];
+
+}
+
+}
+
+/* confetti background terus menerus */
+
+setInterval(()=>{
+
+confetti({
+
+particleCount:2,
+
+angle:60,
+
+spread:55,
+
+origin:{
+x:0
+}
+
+});
+
+confetti({
+
+particleCount:2,
+
+angle:120,
+
+spread:55,
+
+origin:{
+x:1
+}
+
+});
+
+},400);
+
+/* HUJAN HATI */
+
+setInterval(()=>{
+
+const heart=document.createElement("div");
+
+heart.classList.add("heart");
+
+heart.innerHTML="❤️";
+
+heart.style.left=Math.random()*100+"vw";
+
+heart.style.animationDuration=(Math.random()*3+2)+"s";
+
+heart.style.fontSize=(Math.random()*20+15)+"px";
+
+document.body.appendChild(heart);
+
+setTimeout(()=>{
+heart.remove();
+},5000);
+
+},250);
+
+function openSurprise(){
+
+choicePage.classList.add("hidden");
+
+website.classList.remove("hidden");
+
+confetti();
+
+}
+
+let noScale = 1;
+let yesScale = 1;
+
+const noBtn = document.getElementById("noBtn");
+
+noBtn.addEventListener("mouseenter", moveNoButton);
+noBtn.addEventListener("touchstart", moveNoButton);
+
+function moveNoButton(){
+
+const x = Math.random() * (window.innerWidth - 120);
+const y = Math.random() * (window.innerHeight - 120);
+
+noBtn.style.position = "fixed";
+noBtn.style.left = x + "px";
+noBtn.style.top = y + "px";
+
+noBtn.style.transform = "scale(0.9)";
+
+}
+
+</script>
+
+</body>
+</html>
